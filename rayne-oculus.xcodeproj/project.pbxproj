@@ -1,0 +1,322 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		D5D2242219A102D20074F197 /* librayne-oculus.a in CopyFiles */ = {isa = PBXBuildFile; fileRef = D565EBC51950CC66004BBD06 /* librayne-oculus.a */; };
+		D5D2242419A103140074F197 /* ROSystem.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = D5DAB62F19518A3400915B24 /* ROSystem.h */; };
+		D5D2242519A103170074F197 /* ROHMD.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = D5DAB62D19518A3400915B24 /* ROHMD.h */; };
+		D5D2242619A1031C0074F197 /* ROCamera.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = D5DAB6281951877E00915B24 /* ROCamera.h */; };
+		D5DAB6271951876B00915B24 /* ROCamera.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D5DAB6261951876B00915B24 /* ROCamera.cpp */; };
+		D5DAB63019518A3400915B24 /* ROHMD.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D5DAB62C19518A3400915B24 /* ROHMD.cpp */; };
+		D5DAB63119518A3400915B24 /* ROHMD.h in Headers */ = {isa = PBXBuildFile; fileRef = D5DAB62D19518A3400915B24 /* ROHMD.h */; };
+		D5DAB63219518A3400915B24 /* ROSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D5DAB62E19518A3400915B24 /* ROSystem.cpp */; };
+		D5DAB63319518A3400915B24 /* ROSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = D5DAB62F19518A3400915B24 /* ROSystem.h */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		D5D2242119A102800074F197 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /Users/Slin/Documents/dev/projects/Rayne/Occluded/Occluded/Resources/modules/oculus;
+			dstSubfolderSpec = 0;
+			files = (
+				D5D2242219A102D20074F197 /* librayne-oculus.a in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D5D2242319A103030074F197 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /Users/Slin/Documents/dev/projects/Rayne/Occluded/Occluded/Resources/modules/oculus/include;
+			dstSubfolderSpec = 0;
+			files = (
+				D5D2242419A103140074F197 /* ROSystem.h in CopyFiles */,
+				D5D2242519A103170074F197 /* ROHMD.h in CopyFiles */,
+				D5D2242619A1031C0074F197 /* ROCamera.h in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		D565EBC51950CC66004BBD06 /* librayne-oculus.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "librayne-oculus.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		D5DAB6261951876B00915B24 /* ROCamera.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ROCamera.cpp; sourceTree = "<group>"; };
+		D5DAB6281951877E00915B24 /* ROCamera.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ROCamera.h; sourceTree = "<group>"; };
+		D5DAB62C19518A3400915B24 /* ROHMD.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ROHMD.cpp; sourceTree = "<group>"; };
+		D5DAB62D19518A3400915B24 /* ROHMD.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ROHMD.h; sourceTree = "<group>"; };
+		D5DAB62E19518A3400915B24 /* ROSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ROSystem.cpp; sourceTree = "<group>"; };
+		D5DAB62F19518A3400915B24 /* ROSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ROSystem.h; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		D565EBC21950CC66004BBD06 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		D565EBBC1950CC66004BBD06 = {
+			isa = PBXGroup;
+			children = (
+				D5DAB6251951876B00915B24 /* Classes */,
+				D565EBC61950CC66004BBD06 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		D565EBC61950CC66004BBD06 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				D565EBC51950CC66004BBD06 /* librayne-oculus.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		D5DAB6251951876B00915B24 /* Classes */ = {
+			isa = PBXGroup;
+			children = (
+				D5DAB6261951876B00915B24 /* ROCamera.cpp */,
+				D5DAB6281951877E00915B24 /* ROCamera.h */,
+				D5DAB62C19518A3400915B24 /* ROHMD.cpp */,
+				D5DAB62D19518A3400915B24 /* ROHMD.h */,
+				D5DAB62E19518A3400915B24 /* ROSystem.cpp */,
+				D5DAB62F19518A3400915B24 /* ROSystem.h */,
+			);
+			path = Classes;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		D565EBC31950CC66004BBD06 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D5DAB63319518A3400915B24 /* ROSystem.h in Headers */,
+				D5DAB63119518A3400915B24 /* ROHMD.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		D565EBC41950CC66004BBD06 /* rayne-oculus */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D565EBC91950CC66004BBD06 /* Build configuration list for PBXNativeTarget "rayne-oculus" */;
+			buildPhases = (
+				D565EBC11950CC66004BBD06 /* Sources */,
+				D565EBC21950CC66004BBD06 /* Frameworks */,
+				D565EBC31950CC66004BBD06 /* Headers */,
+				D5DAB63419518E0F00915B24 /* ShellScript */,
+				D5D2242119A102800074F197 /* CopyFiles */,
+				D5D2242319A103030074F197 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "rayne-oculus";
+			productName = "rayne-oculus";
+			productReference = D565EBC51950CC66004BBD06 /* librayne-oculus.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		D565EBBD1950CC66004BBD06 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0600;
+				ORGANIZATIONNAME = "Überpixel";
+				TargetAttributes = {
+					D565EBC41950CC66004BBD06 = {
+						CreatedOnToolsVersion = 6.0;
+					};
+				};
+			};
+			buildConfigurationList = D565EBC01950CC66004BBD06 /* Build configuration list for PBXProject "rayne-oculus" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = D565EBBC1950CC66004BBD06;
+			productRefGroup = D565EBC61950CC66004BBD06 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				D565EBC41950CC66004BBD06 /* rayne-oculus */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		D5DAB63419518E0F00915B24 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "mv \"$BUILT_PRODUCTS_DIR/librayne-oculus.a\" \"$BUILT_PRODUCTS_DIR/librayne-oculus-temp.a\"\nlibtool -static -o \"$BUILT_PRODUCTS_DIR/librayne-oculus.a\" \"$BUILT_PRODUCTS_DIR/librayne-oculus-temp.a\" \"$SRCROOT/Vendor/LibOVR/Lib/Mac/$CONFIGURATION/libovr.a\"\nrm \"$BUILT_PRODUCTS_DIR/librayne-oculus-temp.a\"";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		D565EBC11950CC66004BBD06 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D5DAB63019518A3400915B24 /* ROHMD.cpp in Sources */,
+				D5DAB63219518A3400915B24 /* ROSystem.cpp in Sources */,
+				D5DAB6271951876B00915B24 /* ROCamera.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		D565EBC71950CC66004BBD06 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				METAL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+			};
+			name = Debug;
+		};
+		D565EBC81950CC66004BBD06 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				METAL_ENABLE_DEBUG_INFO = NO;
+			};
+			name = Release;
+		};
+		D565EBCA1950CC66004BBD06 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				EXECUTABLE_PREFIX = lib;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"RN_BUILD_MODULE=1",
+				);
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/usr/local/include/rayne/,
+					"$(SRCROOT)/Vendor/LibOVR/Include",
+				);
+				LIBRARY_SEARCH_PATHS = "";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		D565EBCB1950CC66004BBD06 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				EXECUTABLE_PREFIX = lib;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"NDEBUG=1",
+					"RN_BUILD_MODULE=1",
+				);
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/usr/local/include/rayne/,
+					"$(SRCROOT)/Vendor/LibOVR/Include",
+				);
+				LIBRARY_SEARCH_PATHS = "";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		D565EBC01950CC66004BBD06 /* Build configuration list for PBXProject "rayne-oculus" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D565EBC71950CC66004BBD06 /* Debug */,
+				D565EBC81950CC66004BBD06 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D565EBC91950CC66004BBD06 /* Build configuration list for PBXNativeTarget "rayne-oculus" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D565EBCA1950CC66004BBD06 /* Debug */,
+				D565EBCB1950CC66004BBD06 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = D565EBBD1950CC66004BBD06 /* Project object */;
+}
