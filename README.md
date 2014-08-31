@@ -1,0 +1,2 @@
+Oculus module, which can be used to integrate Oculus Rift support into Rayne.
+This repo comes without the Oculus SDK, which can be downloaded at https://developer.oculusvr.com/ and the LibOVR folder from that download needs to be placed in the Vendor folder.

@@ -1,0 +1,1 @@
+rayne-oculus is released under the MIT license, the needed Oculus SDK has its own license and can be downloaded at https://developer.oculusvr.com/.
