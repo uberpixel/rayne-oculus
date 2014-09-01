@@ -47,18 +47,26 @@ namespace RO
 	
 	void HMD::SetAsDisplay(bool captureMain)
 	{
+#if RN_PLATFORM_MAC_OS
 		if(captureMain)
 			CGDisplayCapture(CGMainDisplayID());
 		
 		CGDirectDisplayID RiftDisplayId = (CGDirectDisplayID)_hmd->DisplayId;
 		
 		RN::Screen *screen = RN::Window::GetSharedInstance()->GetScreenWithID(RiftDisplayId);
+#elif RN_PLATFORM_WINDOWS
+		RN::Screen *screen = RN::Window::GetSharedInstance()->GetMainScreen();
+#endif
 		if(screen)
 		{
 			RN::WindowConfiguration *configuration = new RN::WindowConfiguration(_hmd->Resolution.w, _hmd->Resolution.h, screen);
 			RN::Window::GetSharedInstance()->ActivateConfiguration(configuration, RN::Window::Mask::Fullscreen|RN::Window::Mask::VSync);
 			
 			configuration->Release();
+
+#if RN_PLATFORM_WINDOWS
+			ovrHmd_AttachToWindow(_hmd, RN::Window::GetSharedInstance()->GetCurrentWindow(), NULL, NULL);
+#endif
 		}
 		
 		RN::Window::GetSharedInstance()->HideCursor();

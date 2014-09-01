@@ -86,8 +86,8 @@ namespace RO
 				cfg.OGL.Header.RTSize.h = _hmd->GetResolution().y;
 				cfg.OGL.Header.Multisample = 0;
 #if defined(RN_PLATFORM_WINDOWS)
-			//	cfg.OGL.Window             = window;
-			//	cfg.OGL.DC                 = dc;
+				cfg.OGL.Window = RN::Window::GetSharedInstance()->GetCurrentWindow();
+				cfg.OGL.DC = RN::Window::GetSharedInstance()->GetCurrentDC();
 #endif
 				ovrEyeRenderDesc eyeRenderDesc[2];
 				if(ovrHmd_ConfigureRendering(_hmd->GetHMD(), &cfg.Config, ovrDistortionCap_Chromatic | ovrDistortionCap_TimeWarp | ovrDistortionCap_Overdrive, _hmd->GetHMD()->DefaultEyeFov, eyeRenderDesc))
