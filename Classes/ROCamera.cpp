@@ -22,8 +22,9 @@ namespace RO
 {
 	RNDefineMeta(Camera, RN::SceneNode)
 	
-	Camera::Camera(RN::Texture::Format format, RN::Camera::Flags flags)
-	: _hmd(nullptr)
+	Camera::Camera(RN::Texture::Format format, RN::Camera::Flags flags) :
+		_hmd(nullptr),
+		_inFrame(false)
 	{
 		flags &= ~(RN::Camera::Flags::Fullscreen | RN::Camera::Flags::UpdateAspect);
 		RN::Vector2 halfScreenSize = RN::Window::GetSharedInstance()->GetSize();
@@ -61,9 +62,153 @@ namespace RO
 	{
 		RN::SceneNode::Update(delta);
 		
+		if(!_hmd)
+			return;
+		
 		_pose = _hmd->GetPose();
 		_head->SetPosition(_pose.position);
 		_head->SetRotation(_pose.rotation);
+		
+		if(!_validFramebuffer)
+		{
+			RN::OpenGLQueue::GetSharedInstance()->SubmitCommand([this] {
+			
+				RN::gl::BindFramebuffer(GL_FRAMEBUFFER, 0);
+				if(RN::gl::CheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE)
+				{
+					_validFramebuffer = true;
+					InitializeOculus();
+				}
+				
+			}, true);
+		}
+	}
+	
+	void Camera::InitializeOculus()
+	{
+		ovrGLConfig cfg;
+		
+		cfg.OGL.Header.API = ovrRenderAPI_OpenGL;
+		cfg.OGL.Header.RTSize.w = _hmd->GetResolution().x;
+		cfg.OGL.Header.RTSize.h = _hmd->GetResolution().y;
+		cfg.OGL.Header.Multisample = 0;
+#if RN_PLATFORM_WINDOWS
+		cfg.OGL.Window = RN::Window::GetSharedInstance()->GetCurrentWindow();
+		cfg.OGL.DC = RN::Window::GetSharedInstance()->GetCurrentDC();
+#endif
+		ovrEyeRenderDesc eyeRenderDesc[2];
+		
+		if(ovrHmd_ConfigureRendering(_hmd->GetHMD(), &cfg.Config, ovrDistortionCap_Chromatic | ovrDistortionCap_TimeWarp | ovrDistortionCap_Overdrive, _hmd->GetHMD()->DefaultEyeFov, eyeRenderDesc))
+		{
+			_leftEye->SetPosition(-RN::Vector3(eyeRenderDesc[HMD::Eye::Left].HmdToEyeViewOffset.x, eyeRenderDesc[HMD::Eye::Left].HmdToEyeViewOffset.y, eyeRenderDesc[HMD::Eye::Left].HmdToEyeViewOffset.z));
+			_rightEye->SetPosition(-RN::Vector3(eyeRenderDesc[HMD::Eye::Right].HmdToEyeViewOffset.x, eyeRenderDesc[HMD::Eye::Right].HmdToEyeViewOffset.y, eyeRenderDesc[HMD::Eye::Right].HmdToEyeViewOffset.z));
+			
+			ovrMatrix4f ovrLeftProj = ovrMatrix4f_Projection(eyeRenderDesc[0].Fov, 0.01f, 500.0f, true);
+			ovrMatrix4f ovrRightProj = ovrMatrix4f_Projection(eyeRenderDesc[1].Fov, 0.01f, 500.0f, true);
+			
+			RN::Matrix leftProj;
+			RN::Matrix rightProj;
+			
+			leftProj.m[0] = ovrLeftProj.M[0][0];
+			leftProj.m[1] = ovrLeftProj.M[1][0];
+			leftProj.m[2] = ovrLeftProj.M[2][0];
+			leftProj.m[3] = ovrLeftProj.M[3][0];
+			
+			leftProj.m[4] = ovrLeftProj.M[0][1];
+			leftProj.m[5] = ovrLeftProj.M[1][1];
+			leftProj.m[6] = ovrLeftProj.M[2][1];
+			leftProj.m[7] = ovrLeftProj.M[3][1];
+			
+			leftProj.m[8] = ovrLeftProj.M[0][2];
+			leftProj.m[9] = ovrLeftProj.M[1][2];
+			leftProj.m[10] = ovrLeftProj.M[2][2];
+			leftProj.m[11] = ovrLeftProj.M[3][2];
+			
+			leftProj.m[12] = ovrLeftProj.M[0][3];
+			leftProj.m[13] = ovrLeftProj.M[1][3];
+			leftProj.m[14] = ovrLeftProj.M[2][3];
+			leftProj.m[15] = ovrLeftProj.M[3][3];
+			
+			
+			rightProj.m[0] = ovrRightProj.M[0][0];
+			rightProj.m[1] = ovrRightProj.M[1][0];
+			rightProj.m[2] = ovrRightProj.M[2][0];
+			rightProj.m[3] = ovrRightProj.M[3][0];
+			
+			rightProj.m[4] = ovrRightProj.M[0][1];
+			rightProj.m[5] = ovrRightProj.M[1][1];
+			rightProj.m[6] = ovrRightProj.M[2][1];
+			rightProj.m[7] = ovrRightProj.M[3][1];
+			
+			rightProj.m[8] = ovrRightProj.M[0][2];
+			rightProj.m[9] = ovrRightProj.M[1][2];
+			rightProj.m[10] = ovrRightProj.M[2][2];
+			rightProj.m[11] = ovrRightProj.M[3][2];
+			
+			rightProj.m[12] = ovrRightProj.M[0][3];
+			rightProj.m[13] = ovrRightProj.M[1][3];
+			rightProj.m[14] = ovrRightProj.M[2][3];
+			rightProj.m[15] = ovrRightProj.M[3][3];
+			
+			_leftEye->SetProjectionMatrix(leftProj);
+			_rightEye->SetProjectionMatrix(rightProj);
+		}
+		
+		RN::MessageCenter::GetSharedInstance()->AddObserver(kRNKernelDidBeginFrameMessage, [this](RN::Message *message) {
+			RN::OpenGLQueue::GetSharedInstance()->SubmitCommand([this] {
+				ovrHmd_BeginFrame(_hmd->GetHMD(), 0);
+				_inFrame = true;
+			});
+		}, this);
+		
+		RN::Window::GetSharedInstance()->SetFlushProc([this] {
+			ovrPosef renderPose[2];
+			renderPose[0].Position.x = _pose.position.x;
+			renderPose[0].Position.y = _pose.position.y;
+			renderPose[0].Position.z = _pose.position.z;
+			renderPose[0].Orientation.x = _pose.rotation.x;
+			renderPose[0].Orientation.y = _pose.rotation.y;
+			renderPose[0].Orientation.z = _pose.rotation.z;
+			renderPose[0].Orientation.w = _pose.rotation.w;
+			renderPose[1] = renderPose[0];
+			
+			ovrGLTexture eyeTexture[2];
+			
+			eyeTexture[0].OGL.Header.API = ovrRenderAPI_OpenGL;
+			eyeTexture[0].OGL.Header.TextureSize.w = _leftEye->GetFrame().GetSize().x;
+			eyeTexture[0].OGL.Header.TextureSize.h = _leftEye->GetFrame().GetSize().y;
+			eyeTexture[0].OGL.Header.RenderViewport.Size = eyeTexture[0].OGL.Header.TextureSize;
+			eyeTexture[0].OGL.Header.RenderViewport.Pos.x = 0;
+			eyeTexture[0].OGL.Header.RenderViewport.Pos.y = 0;
+			if(_leftEye->GetPostProcessingPipelines().size() == 0)
+			{
+				eyeTexture[0].OGL.TexId = _leftEye->GetRenderTarget()->GetName();
+			}
+			else
+			{
+				eyeTexture[0].OGL.TexId = _leftEye->GetPostProcessingPipelines().back()->GetLastStage()->GetCamera()->GetRenderTarget()->GetName();
+			}
+			
+			eyeTexture[1].OGL.Header.API = ovrRenderAPI_OpenGL;
+			eyeTexture[1].OGL.Header.TextureSize.w = _rightEye->GetFrame().GetSize().x;
+			eyeTexture[1].OGL.Header.TextureSize.h = _rightEye->GetFrame().GetSize().y;
+			eyeTexture[1].OGL.Header.RenderViewport.Size = eyeTexture[1].OGL.Header.TextureSize;
+			eyeTexture[1].OGL.Header.RenderViewport.Pos = eyeTexture[0].OGL.Header.RenderViewport.Pos;
+			if(_rightEye->GetPostProcessingPipelines().size() == 0)
+			{
+				eyeTexture[1].OGL.TexId = _rightEye->GetRenderTarget()->GetName();
+			}
+			else
+			{
+				eyeTexture[1].OGL.TexId = _rightEye->GetPostProcessingPipelines().back()->GetLastStage()->GetCamera()->GetRenderTarget()->GetName();
+			}
+			
+			if(_inFrame)
+			{
+				ovrHmd_EndFrame(_hmd->GetHMD(), renderPose, (ovrTexture *)(eyeTexture));
+				_inFrame = false;
+			}
+		});
 	}
 	
 	void Camera::SetHMD(HMD *hmd)
@@ -81,134 +226,7 @@ namespace RO
 		}
 		
 		_hmd = hmd;
-		
-		if(_hmd)
-		{
-			RN::OpenGLQueue::GetSharedInstance()->SubmitCommand([this] {
-				ovrGLConfig cfg;
-				
-				cfg.OGL.Header.API = ovrRenderAPI_OpenGL;
-				cfg.OGL.Header.RTSize.w = _hmd->GetResolution().x;
-				cfg.OGL.Header.RTSize.h = _hmd->GetResolution().y;
-				cfg.OGL.Header.Multisample = 0;
-#if RN_PLATFORM_WINDOWS
-				cfg.OGL.Window = RN::Window::GetSharedInstance()->GetCurrentWindow();
-				cfg.OGL.DC = RN::Window::GetSharedInstance()->GetCurrentDC();
-#endif
-				ovrEyeRenderDesc eyeRenderDesc[2];
-				if(ovrHmd_ConfigureRendering(_hmd->GetHMD(), &cfg.Config, ovrDistortionCap_Chromatic | ovrDistortionCap_TimeWarp | ovrDistortionCap_Overdrive, _hmd->GetHMD()->DefaultEyeFov, eyeRenderDesc))
-				{
-					_leftEye->SetPosition(-RN::Vector3(eyeRenderDesc[HMD::Eye::Left].HmdToEyeViewOffset.x, eyeRenderDesc[HMD::Eye::Left].HmdToEyeViewOffset.y, eyeRenderDesc[HMD::Eye::Left].HmdToEyeViewOffset.z));
-					_rightEye->SetPosition(-RN::Vector3(eyeRenderDesc[HMD::Eye::Right].HmdToEyeViewOffset.x, eyeRenderDesc[HMD::Eye::Right].HmdToEyeViewOffset.y, eyeRenderDesc[HMD::Eye::Right].HmdToEyeViewOffset.z));
-					
-					ovrMatrix4f ovrLeftProj = ovrMatrix4f_Projection(eyeRenderDesc[0].Fov, 0.01f, 500.0f, true);
-					ovrMatrix4f ovrRightProj = ovrMatrix4f_Projection(eyeRenderDesc[1].Fov, 0.01f, 500.0f, true);
-					
-					RN::Matrix leftProj;
-					RN::Matrix rightProj;
-					
-					leftProj.m[0] = ovrLeftProj.M[0][0];
-					leftProj.m[1] = ovrLeftProj.M[1][0];
-					leftProj.m[2] = ovrLeftProj.M[2][0];
-					leftProj.m[3] = ovrLeftProj.M[3][0];
-					
-					leftProj.m[4] = ovrLeftProj.M[0][1];
-					leftProj.m[5] = ovrLeftProj.M[1][1];
-					leftProj.m[6] = ovrLeftProj.M[2][1];
-					leftProj.m[7] = ovrLeftProj.M[3][1];
-					
-					leftProj.m[8] = ovrLeftProj.M[0][2];
-					leftProj.m[9] = ovrLeftProj.M[1][2];
-					leftProj.m[10] = ovrLeftProj.M[2][2];
-					leftProj.m[11] = ovrLeftProj.M[3][2];
-					
-					leftProj.m[12] = ovrLeftProj.M[0][3];
-					leftProj.m[13] = ovrLeftProj.M[1][3];
-					leftProj.m[14] = ovrLeftProj.M[2][3];
-					leftProj.m[15] = ovrLeftProj.M[3][3];
-					
-					
-					rightProj.m[0] = ovrRightProj.M[0][0];
-					rightProj.m[1] = ovrRightProj.M[1][0];
-					rightProj.m[2] = ovrRightProj.M[2][0];
-					rightProj.m[3] = ovrRightProj.M[3][0];
-					
-					rightProj.m[4] = ovrRightProj.M[0][1];
-					rightProj.m[5] = ovrRightProj.M[1][1];
-					rightProj.m[6] = ovrRightProj.M[2][1];
-					rightProj.m[7] = ovrRightProj.M[3][1];
-					
-					rightProj.m[8] = ovrRightProj.M[0][2];
-					rightProj.m[9] = ovrRightProj.M[1][2];
-					rightProj.m[10] = ovrRightProj.M[2][2];
-					rightProj.m[11] = ovrRightProj.M[3][2];
-					
-					rightProj.m[12] = ovrRightProj.M[0][3];
-					rightProj.m[13] = ovrRightProj.M[1][3];
-					rightProj.m[14] = ovrRightProj.M[2][3];
-					rightProj.m[15] = ovrRightProj.M[3][3];
-					
-					_leftEye->SetProjectionMatrix(leftProj);
-					_rightEye->SetProjectionMatrix(rightProj);
-				}
-			});
-			
-			RN::MessageCenter::GetSharedInstance()->AddObserver(kRNKernelDidBeginFrameMessage, [this](RN::Message *message){
-				RN::OpenGLQueue::GetSharedInstance()->SubmitCommand([this] {
-					ovrHmd_BeginFrame(_hmd->GetHMD(), 0);
-				});
-			}, this);
-			
-			RN::Window::GetSharedInstance()->SetFlushProc([this]{
-				static int counter = 0;
-
-				ovrPosef renderPose[2];
-				renderPose[0].Position.x = _pose.position.x;
-				renderPose[0].Position.y = _pose.position.y;
-				renderPose[0].Position.z = _pose.position.z;
-				renderPose[0].Orientation.x = _pose.rotation.x;
-				renderPose[0].Orientation.y = _pose.rotation.y;
-				renderPose[0].Orientation.z = _pose.rotation.z;
-				renderPose[0].Orientation.w = _pose.rotation.w;
-				renderPose[1] = renderPose[0];
-				
-				ovrGLTexture eyeTexture[2];
-				
-				eyeTexture[0].OGL.Header.API = ovrRenderAPI_OpenGL;
-				eyeTexture[0].OGL.Header.TextureSize.w = _leftEye->GetFrame().GetSize().x;
-				eyeTexture[0].OGL.Header.TextureSize.h = _leftEye->GetFrame().GetSize().y;
-				eyeTexture[0].OGL.Header.RenderViewport.Size = eyeTexture[0].OGL.Header.TextureSize;
-				eyeTexture[0].OGL.Header.RenderViewport.Pos.x = 0;
-				eyeTexture[0].OGL.Header.RenderViewport.Pos.y = 0;
-				if(_leftEye->GetPostProcessingPipelines().size() == 0)
-				{
-					eyeTexture[0].OGL.TexId = _leftEye->GetRenderTarget()->GetName();
-				}
-				else
-				{
-					eyeTexture[0].OGL.TexId = _leftEye->GetPostProcessingPipelines().back()->GetLastStage()->GetCamera()->GetRenderTarget()->GetName();
-				}
-				
-				eyeTexture[1].OGL.Header.API = ovrRenderAPI_OpenGL;
-				eyeTexture[1].OGL.Header.TextureSize.w = _rightEye->GetFrame().GetSize().x;
-				eyeTexture[1].OGL.Header.TextureSize.h = _rightEye->GetFrame().GetSize().y;
-				eyeTexture[1].OGL.Header.RenderViewport.Size = eyeTexture[1].OGL.Header.TextureSize;
-				eyeTexture[1].OGL.Header.RenderViewport.Pos = eyeTexture[0].OGL.Header.RenderViewport.Pos;
-				if(_rightEye->GetPostProcessingPipelines().size() == 0)
-				{
-					eyeTexture[1].OGL.TexId = _rightEye->GetRenderTarget()->GetName();
-				}
-				else
-				{
-					eyeTexture[1].OGL.TexId = _rightEye->GetPostProcessingPipelines().back()->GetLastStage()->GetCamera()->GetRenderTarget()->GetName();
-				}
-				
-				if(counter > 100)
-					ovrHmd_EndFrame(_hmd->GetHMD(), renderPose, (ovrTexture *)(eyeTexture));
-
-				counter += 1;
-			});
-		}
+		_validFramebuffer = false;
 	}
 	
 	void Camera::SetAmbientColor(const RN::Color &color)

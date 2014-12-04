@@ -39,12 +39,16 @@ namespace RO
 		RN::Camera *GetRightCamera();
 		
 	private:
+		void InitializeOculus();
+		
 		RN::Camera *_rightEye;
 		RN::Camera *_leftEye;
 		RN::SceneNode *_head;
 		HMD::Pose _pose;
 		
 		HMD *_hmd;
+		bool _inFrame;
+		bool _validFramebuffer;
 		
 		RNDeclareMeta(Camera)
 	};
