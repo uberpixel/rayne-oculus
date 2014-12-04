@@ -62,8 +62,8 @@ namespace RO
 		RN::SceneNode::Update(delta);
 		
 		_pose = _hmd->GetPose();
-		SetPosition(_pose.position);
-		SetRotation(_pose.rotation);
+		_head->SetPosition(_pose.position);
+		_head->SetRotation(_pose.rotation);
 	}
 	
 	void Camera::SetHMD(HMD *hmd)
