@@ -270,14 +270,8 @@
 					"$(inherited)",
 					/usr/local/include/rayne/,
 					"$(SRCROOT)/Vendor/LibOVR/Include",
-					"\"$(SRCROOT)/../../Rayne/Vendor/angelscript/include\"",
 				);
 				LIBRARY_SEARCH_PATHS = "";
-				OTHER_CPLUSPLUSFLAGS = (
-					"$(OTHER_CFLAGS)",
-					"-x",
-					"objective-c++",
-				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -295,14 +289,8 @@
 					"$(inherited)",
 					/usr/local/include/rayne/,
 					"$(SRCROOT)/Vendor/LibOVR/Include",
-					"\"$(SRCROOT)/../../Rayne/Vendor/angelscript/include\"",
 				);
 				LIBRARY_SEARCH_PATHS = "";
-				OTHER_CPLUSPLUSFLAGS = (
-					"$(OTHER_CFLAGS)",
-					"-x",
-					"objective-c++",
-				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
