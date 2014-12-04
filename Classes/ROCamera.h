@@ -38,16 +38,11 @@ namespace RO
 		RN::Camera *GetLeftCamera();
 		RN::Camera *GetRightCamera();
 		
-	protected:
-		void DidUpdate(RN::SceneNode::ChangeSet changeSet) override;
-		
 	private:
 		RN::Camera *_rightEye;
 		RN::Camera *_leftEye;
 		RN::SceneNode *_head;
 		HMD::Pose _pose;
-		RN::Vector3 _tempHeadPosition;
-		RN::Quaternion _tempHeadRotation;
 		
 		HMD *_hmd;
 		

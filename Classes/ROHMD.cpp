@@ -70,6 +70,9 @@ namespace RO
 		}
 		
 		RN::Window::GetSharedInstance()->HideCursor();
+		RN::Timer::ScheduledTimerWithDuration(std::chrono::seconds(5), [this] {
+			ovrHmd_DismissHSWDisplay(_hmd);
+		}, false);
 	}
 	
 	HMD::Pose HMD::GetPose()

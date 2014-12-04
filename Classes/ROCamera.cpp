@@ -30,8 +30,7 @@ namespace RO
 		halfScreenSize.x *= 0.5f;
 		
 		_head = new RN::SceneNode();
-		_head->AddDependency(this);
-		//AddChild(_head);
+		AddChild(_head);
 		
 		_leftEye = new RN::Camera(halfScreenSize, format, flags | RN::Camera::Flags::NoFlush);
 		_leftEye->SceneNode::SetFlags(RN::SceneNode::Flags::NoSave|RN::SceneNode::Flags::HideInEditor);
@@ -39,7 +38,7 @@ namespace RO
 		_leftEye->SetRenderingFrame(_leftEye->GetFrame());
 		_leftEye->SetBlitMode(RN::Camera::BlitMode::Unstretched);
 		_leftEye->SetDebugName("OR::Camera::Left");
-		_head->AddChild(_leftEye);
+		_head->AddChild(_leftEye->Autorelease());
 		
 		_rightEye = new RN::Camera(halfScreenSize, format, flags | RN::Camera::Flags::NoFlush);
 		_rightEye->SceneNode::SetFlags(RN::SceneNode::Flags::NoSave|RN::SceneNode::Flags::HideInEditor);
@@ -47,7 +46,7 @@ namespace RO
 		_rightEye->SetRenderingFrame(_leftEye->GetFrame());
 		_rightEye->SetBlitMode(RN::Camera::BlitMode::Unstretched);
 		_rightEye->SetDebugName("OR::Camera::Right");
-		_head->AddChild(_rightEye);
+		_head->AddChild(_rightEye->Autorelease());
 
 		//Shits broken: the above code somehow changes _hmd...
 		_hmd = nullptr;
@@ -55,12 +54,16 @@ namespace RO
 	
 	Camera::~Camera()
 	{
-		
+		_head->Release();
 	}
 	
 	void Camera::Update(float delta)
 	{
 		RN::SceneNode::Update(delta);
+		
+		_pose = _hmd->GetPose();
+		SetPosition(_pose.position);
+		SetRotation(_pose.rotation);
 	}
 	
 	void Camera::SetHMD(HMD *hmd)
@@ -153,10 +156,6 @@ namespace RO
 			RN::MessageCenter::GetSharedInstance()->AddObserver(kRNKernelDidBeginFrameMessage, [this](RN::Message *message){
 				RN::OpenGLQueue::GetSharedInstance()->SubmitCommand([this] {
 					ovrHmd_BeginFrame(_hmd->GetHMD(), 0);
-					
-					_pose = _hmd->GetPose();
-					_head->SetWorldPosition(GetWorldPosition()+_pose.position);
-					_head->SetWorldRotation(GetWorldRotation()*_pose.rotation);
 				});
 			}, this);
 			
@@ -232,15 +231,5 @@ namespace RO
 	RN::Camera *Camera::GetRightCamera()
 	{
 		return _rightEye;
-	}
-	
-	void Camera::DidUpdate(RN::SceneNode::ChangeSet changeSet)
-	{
-		RN::SceneNode::DidUpdate(changeSet);
-		if(changeSet == RN::SceneNode::ChangeSet::Position)
-		{
-			_tempHeadPosition = GetWorldPosition();
-			_tempHeadRotation = GetWorldRotation();
-		}
 	}
 }
