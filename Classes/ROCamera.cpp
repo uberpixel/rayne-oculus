@@ -48,6 +48,9 @@ namespace RO
 		_rightEye->SetBlitMode(RN::Camera::BlitMode::Unstretched);
 		_rightEye->SetDebugName("OR::Camera::Right");
 		_head->AddChild(_rightEye);
+
+		//Shits broken: the above code somehow changes _hmd...
+		_hmd = nullptr;
 	}
 	
 	Camera::~Camera()
@@ -92,8 +95,8 @@ namespace RO
 				ovrEyeRenderDesc eyeRenderDesc[2];
 				if(ovrHmd_ConfigureRendering(_hmd->GetHMD(), &cfg.Config, ovrDistortionCap_Chromatic | ovrDistortionCap_TimeWarp | ovrDistortionCap_Overdrive, _hmd->GetHMD()->DefaultEyeFov, eyeRenderDesc))
 				{
-					_leftEye->SetPosition(-RN::Vector3(eyeRenderDesc[HMD::Eye::Left].ViewAdjust.x, eyeRenderDesc[HMD::Eye::Left].ViewAdjust.y, eyeRenderDesc[HMD::Eye::Left].ViewAdjust.z));
-					_rightEye->SetPosition(-RN::Vector3(eyeRenderDesc[HMD::Eye::Right].ViewAdjust.x, eyeRenderDesc[HMD::Eye::Right].ViewAdjust.y, eyeRenderDesc[HMD::Eye::Right].ViewAdjust.z));
+					_leftEye->SetPosition(-RN::Vector3(eyeRenderDesc[HMD::Eye::Left].HmdToEyeViewOffset.x, eyeRenderDesc[HMD::Eye::Left].HmdToEyeViewOffset.y, eyeRenderDesc[HMD::Eye::Left].HmdToEyeViewOffset.z));
+					_rightEye->SetPosition(-RN::Vector3(eyeRenderDesc[HMD::Eye::Right].HmdToEyeViewOffset.x, eyeRenderDesc[HMD::Eye::Right].HmdToEyeViewOffset.y, eyeRenderDesc[HMD::Eye::Right].HmdToEyeViewOffset.z));
 					
 					ovrMatrix4f ovrLeftProj = ovrMatrix4f_Projection(eyeRenderDesc[0].Fov, 0.01f, 500.0f, true);
 					ovrMatrix4f ovrRightProj = ovrMatrix4f_Projection(eyeRenderDesc[1].Fov, 0.01f, 500.0f, true);
@@ -158,6 +161,8 @@ namespace RO
 			}, this);
 			
 			RN::Window::GetSharedInstance()->SetFlushProc([this]{
+				static int counter = 0;
+
 				ovrPosef renderPose[2];
 				renderPose[0].Position.x = _pose.position.x;
 				renderPose[0].Position.y = _pose.position.y;
@@ -199,7 +204,10 @@ namespace RO
 					eyeTexture[1].OGL.TexId = _rightEye->GetPostProcessingPipelines().back()->GetLastStage()->GetCamera()->GetRenderTarget()->GetName();
 				}
 				
-				ovrHmd_EndFrame(_hmd->GetHMD(), renderPose, (ovrTexture *)(eyeTexture));
+				if(counter > 100)
+					ovrHmd_EndFrame(_hmd->GetHMD(), renderPose, (ovrTexture *)(eyeTexture));
+
+				counter += 1;
 			});
 		}
 	}

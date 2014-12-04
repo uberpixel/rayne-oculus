@@ -41,7 +41,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <IncludePath>$(ProgramFiles)\Rayne\include;$(ProjectDir)\Vendor\LibOVR\Include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
     <LibraryPath>$(ProgramFiles)\Rayne\$(Configuration);$(ProjectDir)\Vendor\LibOVR\Lib\Win32\VS2013;$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);</LibraryPath>
-    <TargetName>lib$(ProjectName)</TargetName>
+    <TargetName>lib$(ProjectName)~debug</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
