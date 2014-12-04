@@ -60,7 +60,7 @@ namespace RO
 	
 	void Camera::Update(float delta)
 	{
-		
+		RN::SceneNode::Update(delta);
 	}
 	
 	void Camera::SetHMD(HMD *hmd)
@@ -88,7 +88,7 @@ namespace RO
 				cfg.OGL.Header.RTSize.w = _hmd->GetResolution().x;
 				cfg.OGL.Header.RTSize.h = _hmd->GetResolution().y;
 				cfg.OGL.Header.Multisample = 0;
-#if defined(RN_PLATFORM_WINDOWS)
+#if RN_PLATFORM_WINDOWS
 				cfg.OGL.Window = RN::Window::GetSharedInstance()->GetCurrentWindow();
 				cfg.OGL.DC = RN::Window::GetSharedInstance()->GetCurrentDC();
 #endif

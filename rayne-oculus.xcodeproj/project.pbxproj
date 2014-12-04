@@ -7,41 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		D5D2242219A102D20074F197 /* librayne-oculus.a in CopyFiles */ = {isa = PBXBuildFile; fileRef = D565EBC51950CC66004BBD06 /* librayne-oculus.a */; };
-		D5D2242419A103140074F197 /* ROSystem.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = D5DAB62F19518A3400915B24 /* ROSystem.h */; };
-		D5D2242519A103170074F197 /* ROHMD.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = D5DAB62D19518A3400915B24 /* ROHMD.h */; };
-		D5D2242619A1031C0074F197 /* ROCamera.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = D5DAB6281951877E00915B24 /* ROCamera.h */; };
 		D5DAB6271951876B00915B24 /* ROCamera.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D5DAB6261951876B00915B24 /* ROCamera.cpp */; };
 		D5DAB63019518A3400915B24 /* ROHMD.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D5DAB62C19518A3400915B24 /* ROHMD.cpp */; };
 		D5DAB63119518A3400915B24 /* ROHMD.h in Headers */ = {isa = PBXBuildFile; fileRef = D5DAB62D19518A3400915B24 /* ROHMD.h */; };
 		D5DAB63219518A3400915B24 /* ROSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D5DAB62E19518A3400915B24 /* ROSystem.cpp */; };
 		D5DAB63319518A3400915B24 /* ROSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = D5DAB62F19518A3400915B24 /* ROSystem.h */; };
 /* End PBXBuildFile section */
-
-/* Begin PBXCopyFilesBuildPhase section */
-		D5D2242119A102800074F197 /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = /Users/Slin/Documents/dev/projects/Rayne/Occluded/Occluded/Resources/modules/oculus;
-			dstSubfolderSpec = 0;
-			files = (
-				D5D2242219A102D20074F197 /* librayne-oculus.a in CopyFiles */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		D5D2242319A103030074F197 /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = /Users/Slin/Documents/dev/projects/Rayne/Occluded/Occluded/Resources/modules/oculus/include;
-			dstSubfolderSpec = 0;
-			files = (
-				D5D2242419A103140074F197 /* ROSystem.h in CopyFiles */,
-				D5D2242519A103170074F197 /* ROHMD.h in CopyFiles */,
-				D5D2242619A1031C0074F197 /* ROCamera.h in CopyFiles */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		D565EBC51950CC66004BBD06 /* librayne-oculus.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "librayne-oculus.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -116,8 +87,6 @@
 				D565EBC21950CC66004BBD06 /* Frameworks */,
 				D565EBC31950CC66004BBD06 /* Headers */,
 				D5DAB63419518E0F00915B24 /* ShellScript */,
-				D5D2242119A102800074F197 /* CopyFiles */,
-				D5D2242319A103030074F197 /* CopyFiles */,
 			);
 			buildRules = (
 			);
