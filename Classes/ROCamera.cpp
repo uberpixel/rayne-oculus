@@ -88,7 +88,7 @@ namespace RO
 				cfg.OGL.Header.RTSize.w = _hmd->GetResolution().x;
 				cfg.OGL.Header.RTSize.h = _hmd->GetResolution().y;
 				cfg.OGL.Header.Multisample = 0;
-#if defined(RN_PLATFORM_WINDOWS)
+#if RN_PLATFORM_WINDOWS
 				cfg.OGL.Window = RN::Window::GetSharedInstance()->GetCurrentWindow();
 				cfg.OGL.DC = RN::Window::GetSharedInstance()->GetCurrentDC();
 #endif
@@ -204,8 +204,10 @@ namespace RO
 					eyeTexture[1].OGL.TexId = _rightEye->GetPostProcessingPipelines().back()->GetLastStage()->GetCamera()->GetRenderTarget()->GetName();
 				}
 				
-				if(counter > 100)
-					ovrHmd_EndFrame(_hmd->GetHMD(), renderPose, (ovrTexture *)(eyeTexture));
+				if(counter > 1)
+				{
+						ovrHmd_EndFrame(_hmd->GetHMD(), renderPose, (ovrTexture *)(eyeTexture));
+				}
 
 				counter += 1;
 			});
