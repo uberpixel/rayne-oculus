@@ -250,4 +250,9 @@ namespace RO
 	{
 		return _rightEye;
 	}
+	
+	RN::SceneNode *Camera::GetHead()
+	{
+		return _head;
+	}
 }

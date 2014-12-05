@@ -38,6 +38,8 @@ namespace RO
 		RN::Camera *GetLeftCamera();
 		RN::Camera *GetRightCamera();
 		
+		RN::SceneNode *GetHead();
+		
 	private:
 		void InitializeOculus();
 		
