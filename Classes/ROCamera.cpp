@@ -89,8 +89,8 @@ namespace RO
 		ovrGLConfig cfg;
 		
 		cfg.OGL.Header.API = ovrRenderAPI_OpenGL;
-		cfg.OGL.Header.RTSize.w = _hmd->GetResolution().x;
-		cfg.OGL.Header.RTSize.h = _hmd->GetResolution().y;
+		cfg.OGL.Header.BackBufferSize.w = _hmd->GetResolution().x;
+		cfg.OGL.Header.BackBufferSize.h = _hmd->GetResolution().y;
 		cfg.OGL.Header.Multisample = 0;
 #if RN_PLATFORM_WINDOWS
 		cfg.OGL.Window = RN::Window::GetSharedInstance()->GetCurrentWindow();
