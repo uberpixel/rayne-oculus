@@ -98,7 +98,7 @@ namespace RO
 #endif
 		ovrEyeRenderDesc eyeRenderDesc[2];
 		
-		if(ovrHmd_ConfigureRendering(_hmd->GetHMD(), &cfg.Config, ovrDistortionCap_Chromatic | ovrDistortionCap_TimeWarp | ovrDistortionCap_Overdrive, _hmd->GetHMD()->DefaultEyeFov, eyeRenderDesc))
+		if(ovrHmd_ConfigureRendering(_hmd->GetHMD(), &cfg.Config, ovrDistortionCap_Chromatic | ovrDistortionCap_NoRestore | ovrDistortionCap_Vignette | ovrDistortionCap_TimeWarp | ovrDistortionCap_HqDistortion | ovrDistortionCap_Overdrive, _hmd->GetHMD()->DefaultEyeFov, eyeRenderDesc))
 		{
 			_leftEye->SetPosition(-RN::Vector3(eyeRenderDesc[HMD::Eye::Left].HmdToEyeViewOffset.x, eyeRenderDesc[HMD::Eye::Left].HmdToEyeViewOffset.y, eyeRenderDesc[HMD::Eye::Left].HmdToEyeViewOffset.z));
 			_rightEye->SetPosition(-RN::Vector3(eyeRenderDesc[HMD::Eye::Right].HmdToEyeViewOffset.x, eyeRenderDesc[HMD::Eye::Right].HmdToEyeViewOffset.y, eyeRenderDesc[HMD::Eye::Right].HmdToEyeViewOffset.z));
