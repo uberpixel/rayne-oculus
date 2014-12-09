@@ -56,6 +56,14 @@ namespace RO
 		RN::Screen *screen = RN::Window::GetSharedInstance()->GetScreenWithID(RiftDisplayId);
 #elif RN_PLATFORM_WINDOWS
 		RN::Screen *screen = RN::Window::GetSharedInstance()->GetMainScreen();
+		const std::vector<RN::Screen *> &screens = RN::Window::GetSharedInstance()->GetScreens();
+		for(RN::Screen *scrn : screens)
+		{
+			if(RN::Math::Compare(scrn->GetFrame().x, _hmd->WindowsPos.x) && RN::Math::Compare(scrn->GetFrame().y, _hmd->WindowsPos.y))
+			{
+				screen = scrn;
+			}
+		}
 #endif
 		if(screen)
 		{
@@ -65,14 +73,16 @@ namespace RO
 			configuration->Release();
 
 #if RN_PLATFORM_WINDOWS
-			ovrHmd_AttachToWindow(_hmd, RN::Window::GetSharedInstance()->GetCurrentWindow(), NULL, NULL);
+//			ovrHmd_AttachToWindow(_hmd, RN::Window::GetSharedInstance()->GetCurrentWindow(), NULL, NULL);
 #endif
 		}
 		
 		RN::Window::GetSharedInstance()->HideCursor();
-		RN::Timer::ScheduledTimerWithDuration(std::chrono::seconds(5), [this] {
-			ovrHmd_DismissHSWDisplay(_hmd);
-		}, false);
+	}
+
+	void HMD::DismissSafetyWarning()
+	{
+		ovrHmd_DismissHSWDisplay(_hmd);
 	}
 	
 	HMD::Pose HMD::GetPose()

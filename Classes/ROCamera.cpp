@@ -173,7 +173,7 @@ namespace RO
 			renderPose[1] = renderPose[0];
 			
 			ovrGLTexture eyeTexture[2];
-			
+
 			eyeTexture[0].OGL.Header.API = ovrRenderAPI_OpenGL;
 			eyeTexture[0].OGL.Header.TextureSize.w = _leftEye->GetFrame().GetSize().x;
 			eyeTexture[0].OGL.Header.TextureSize.h = _leftEye->GetFrame().GetSize().y;

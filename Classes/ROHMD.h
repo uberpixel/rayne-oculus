@@ -43,6 +43,7 @@ namespace RO
 		~HMD();
 		
 		void SetAsDisplay(bool captureMain);
+		void DismissSafetyWarning();
 		
 		RN::Vector2 GetResolution();
 		RN::Vector4 GetDefaultFOV(Eye eye);
