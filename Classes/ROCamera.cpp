@@ -22,40 +22,43 @@ namespace RO
 {
 	RNDefineMeta(Camera, RN::SceneNode)
 	
-	Camera::Camera(RN::Texture::Format format, RN::Camera::Flags flags) :
-		_hmd(nullptr),
-		_inFrame(false)
+		Camera::Camera(HMD *hmd, float pixelsPerDisplayPixel, RN::Texture::Format format, RN::Camera::Flags flags) :
+		_hmd(hmd),
+		_inFrame(false),
+		_validFramebuffer(false)
 	{
-		flags &= ~(RN::Camera::Flags::Fullscreen | RN::Camera::Flags::UpdateAspect);
-		RN::Vector2 halfScreenSize = RN::Window::GetSharedInstance()->GetSize();
-		halfScreenSize.x *= 0.5f;
+		RN_ASSERT(_hmd, "HMD must not be NULL");
 		
 		_head = new RN::SceneNode();
 		AddChild(_head);
 		
-		_leftEye = new RN::Camera(halfScreenSize, format, flags | RN::Camera::Flags::NoFlush);
+		ovrSizei leftTextureSize = ovrHmd_GetFovTextureSize(_hmd->GetHMD(), ovrEye_Left, _hmd->GetHMD()->DefaultEyeFov[ovrEye_Left], pixelsPerDisplayPixel);
+		ovrSizei rightTextureSize = ovrHmd_GetFovTextureSize(_hmd->GetHMD(), ovrEye_Left, _hmd->GetHMD()->DefaultEyeFov[ovrEye_Left], pixelsPerDisplayPixel);
+		
+		flags &= ~(RN::Camera::Flags::Fullscreen | RN::Camera::Flags::UpdateAspect);
+
+		_leftEye = new RN::Camera(RN::Vector2(leftTextureSize.w, leftTextureSize.h), format, flags | RN::Camera::Flags::NoFlush);
 		_leftEye->SceneNode::SetFlags(RN::SceneNode::Flags::NoSave|RN::SceneNode::Flags::HideInEditor);
-		_leftEye->SetFrame(RN::Rect(0.0f, 0.0f, halfScreenSize.x, halfScreenSize.y));
+		_leftEye->SetFrame(RN::Rect(0.0f, 0.0f, leftTextureSize.w, leftTextureSize.h));
 		_leftEye->SetRenderingFrame(_leftEye->GetFrame());
 		_leftEye->SetBlitMode(RN::Camera::BlitMode::Unstretched);
 		_leftEye->SetDebugName("OR::Camera::Left");
 		_head->AddChild(_leftEye->Autorelease());
 		
-		_rightEye = new RN::Camera(halfScreenSize, format, flags | RN::Camera::Flags::NoFlush);
+		_rightEye = new RN::Camera(RN::Vector2(rightTextureSize.w, rightTextureSize.h), format, flags | RN::Camera::Flags::NoFlush);
 		_rightEye->SceneNode::SetFlags(RN::SceneNode::Flags::NoSave|RN::SceneNode::Flags::HideInEditor);
-		_rightEye->SetFrame(RN::Rect(0.0f, 0.0f, halfScreenSize.x, halfScreenSize.y));
+		_rightEye->SetFrame(RN::Rect(0.0f, 0.0f, rightTextureSize.w, rightTextureSize.h));
 		_rightEye->SetRenderingFrame(_leftEye->GetFrame());
 		_rightEye->SetBlitMode(RN::Camera::BlitMode::Unstretched);
 		_rightEye->SetDebugName("OR::Camera::Right");
 		_head->AddChild(_rightEye->Autorelease());
-
-		//Shits broken: the above code somehow changes _hmd...
-		_hmd = nullptr;
 	}
 	
 	Camera::~Camera()
 	{
 		_head->Release();
+		_leftEye->Release();
+		_rightEye->Release();
 	}
 	
 	void Camera::Update(float delta)
@@ -102,56 +105,8 @@ namespace RO
 		{
 			_leftEye->SetPosition(-RN::Vector3(eyeRenderDesc[HMD::Eye::Left].HmdToEyeViewOffset.x, eyeRenderDesc[HMD::Eye::Left].HmdToEyeViewOffset.y, eyeRenderDesc[HMD::Eye::Left].HmdToEyeViewOffset.z));
 			_rightEye->SetPosition(-RN::Vector3(eyeRenderDesc[HMD::Eye::Right].HmdToEyeViewOffset.x, eyeRenderDesc[HMD::Eye::Right].HmdToEyeViewOffset.y, eyeRenderDesc[HMD::Eye::Right].HmdToEyeViewOffset.z));
-			
-			ovrMatrix4f ovrLeftProj = ovrMatrix4f_Projection(eyeRenderDesc[0].Fov, 0.01f, 500.0f, true);
-			ovrMatrix4f ovrRightProj = ovrMatrix4f_Projection(eyeRenderDesc[1].Fov, 0.01f, 500.0f, true);
-			
-			RN::Matrix leftProj;
-			RN::Matrix rightProj;
-			
-			leftProj.m[0] = ovrLeftProj.M[0][0];
-			leftProj.m[1] = ovrLeftProj.M[1][0];
-			leftProj.m[2] = ovrLeftProj.M[2][0];
-			leftProj.m[3] = ovrLeftProj.M[3][0];
-			
-			leftProj.m[4] = ovrLeftProj.M[0][1];
-			leftProj.m[5] = ovrLeftProj.M[1][1];
-			leftProj.m[6] = ovrLeftProj.M[2][1];
-			leftProj.m[7] = ovrLeftProj.M[3][1];
-			
-			leftProj.m[8] = ovrLeftProj.M[0][2];
-			leftProj.m[9] = ovrLeftProj.M[1][2];
-			leftProj.m[10] = ovrLeftProj.M[2][2];
-			leftProj.m[11] = ovrLeftProj.M[3][2];
-			
-			leftProj.m[12] = ovrLeftProj.M[0][3];
-			leftProj.m[13] = ovrLeftProj.M[1][3];
-			leftProj.m[14] = ovrLeftProj.M[2][3];
-			leftProj.m[15] = ovrLeftProj.M[3][3];
-			
-			
-			rightProj.m[0] = ovrRightProj.M[0][0];
-			rightProj.m[1] = ovrRightProj.M[1][0];
-			rightProj.m[2] = ovrRightProj.M[2][0];
-			rightProj.m[3] = ovrRightProj.M[3][0];
-			
-			rightProj.m[4] = ovrRightProj.M[0][1];
-			rightProj.m[5] = ovrRightProj.M[1][1];
-			rightProj.m[6] = ovrRightProj.M[2][1];
-			rightProj.m[7] = ovrRightProj.M[3][1];
-			
-			rightProj.m[8] = ovrRightProj.M[0][2];
-			rightProj.m[9] = ovrRightProj.M[1][2];
-			rightProj.m[10] = ovrRightProj.M[2][2];
-			rightProj.m[11] = ovrRightProj.M[3][2];
-			
-			rightProj.m[12] = ovrRightProj.M[0][3];
-			rightProj.m[13] = ovrRightProj.M[1][3];
-			rightProj.m[14] = ovrRightProj.M[2][3];
-			rightProj.m[15] = ovrRightProj.M[3][3];
-			
-			_leftEye->SetProjectionMatrix(leftProj);
-			_rightEye->SetProjectionMatrix(rightProj);
+
+			UpdateProjectionMatrix();
 		}
 		
 		RN::MessageCenter::GetSharedInstance()->AddObserver(kRNKernelDidBeginFrameMessage, [this](RN::Message *message) {
@@ -210,29 +165,84 @@ namespace RO
 			}
 		});
 	}
-	
-	void Camera::SetHMD(HMD *hmd)
+
+	void Camera::UpdateProjectionMatrix()
 	{
-		if(_hmd == hmd)
-			return;
-		
-		if(_hmd)
-		{
-			RN::OpenGLQueue::GetSharedInstance()->SubmitCommand([this] {
-				ovrHmd_ConfigureRendering(_hmd->GetHMD(), nullptr, NULL, NULL, NULL);
-			});
-			
-			RN::MessageCenter::GetSharedInstance()->RemoveObserver(this);
-		}
-		
-		_hmd = hmd;
-		_validFramebuffer = false;
+		ovrMatrix4f ovrLeftProj = ovrMatrix4f_Projection(_hmd->GetHMD()->DefaultEyeFov[ovrEye_Left], _rightEye->GetClipNear(), _leftEye->GetClipFar(), true);
+		ovrMatrix4f ovrRightProj = ovrMatrix4f_Projection(_hmd->GetHMD()->DefaultEyeFov[ovrEye_Right], _rightEye->GetClipNear(), _rightEye->GetClipFar(), true);
+
+		RN::Matrix leftProj;
+		RN::Matrix rightProj;
+
+		leftProj.m[0] = ovrLeftProj.M[0][0];
+		leftProj.m[1] = ovrLeftProj.M[1][0];
+		leftProj.m[2] = ovrLeftProj.M[2][0];
+		leftProj.m[3] = ovrLeftProj.M[3][0];
+
+		leftProj.m[4] = ovrLeftProj.M[0][1];
+		leftProj.m[5] = ovrLeftProj.M[1][1];
+		leftProj.m[6] = ovrLeftProj.M[2][1];
+		leftProj.m[7] = ovrLeftProj.M[3][1];
+
+		leftProj.m[8] = ovrLeftProj.M[0][2];
+		leftProj.m[9] = ovrLeftProj.M[1][2];
+		leftProj.m[10] = ovrLeftProj.M[2][2];
+		leftProj.m[11] = ovrLeftProj.M[3][2];
+
+		leftProj.m[12] = ovrLeftProj.M[0][3];
+		leftProj.m[13] = ovrLeftProj.M[1][3];
+		leftProj.m[14] = ovrLeftProj.M[2][3];
+		leftProj.m[15] = ovrLeftProj.M[3][3];
+
+
+		rightProj.m[0] = ovrRightProj.M[0][0];
+		rightProj.m[1] = ovrRightProj.M[1][0];
+		rightProj.m[2] = ovrRightProj.M[2][0];
+		rightProj.m[3] = ovrRightProj.M[3][0];
+
+		rightProj.m[4] = ovrRightProj.M[0][1];
+		rightProj.m[5] = ovrRightProj.M[1][1];
+		rightProj.m[6] = ovrRightProj.M[2][1];
+		rightProj.m[7] = ovrRightProj.M[3][1];
+
+		rightProj.m[8] = ovrRightProj.M[0][2];
+		rightProj.m[9] = ovrRightProj.M[1][2];
+		rightProj.m[10] = ovrRightProj.M[2][2];
+		rightProj.m[11] = ovrRightProj.M[3][2];
+
+		rightProj.m[12] = ovrRightProj.M[0][3];
+		rightProj.m[13] = ovrRightProj.M[1][3];
+		rightProj.m[14] = ovrRightProj.M[2][3];
+		rightProj.m[15] = ovrRightProj.M[3][3];
+
+		_leftEye->SetProjectionMatrix(leftProj);
+		_rightEye->SetProjectionMatrix(rightProj);
 	}
 	
 	void Camera::SetAmbientColor(const RN::Color &color)
 	{
 		_leftEye->SetAmbientColor(color);
 		_rightEye->SetAmbientColor(color);
+	}
+
+	void Camera::SetClipFar(float clipFar)
+	{
+		_leftEye->SetClipFar(clipFar);
+		_rightEye->SetClipFar(clipFar);
+		UpdateProjectionMatrix();
+	}
+
+	void Camera::SetClipNear(float clipNear)
+	{
+		_leftEye->SetClipNear(clipNear);
+		_rightEye->SetClipNear(clipNear);
+		UpdateProjectionMatrix();
+	}
+
+	void Camera::SetSky(RN::Model *sky)
+	{
+		_leftEye->SetSky(sky);
+		_rightEye->SetSky(sky);
 	}
 	
 	void Camera::SetBlitShader(RN::Shader *shader)

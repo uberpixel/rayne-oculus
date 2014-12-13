@@ -26,14 +26,15 @@ namespace RO
 	class Camera : public RN::SceneNode
 	{
 	public:
-		Camera(RN::Texture::Format format, RN::Camera::Flags flags=RN::Camera::Flags::Defaults);
+		Camera(HMD *hmd, float pixelsPerDisplayPixel, RN::Texture::Format format, RN::Camera::Flags flags = RN::Camera::Flags::Defaults);
 		~Camera();
 		
 		void Update(float delta) override;
 		
-		void SetHMD(HMD *hmd);
-		
+		void SetSky(RN::Model *sky);
 		void SetAmbientColor(const RN::Color &color);
+		void SetClipFar(float clipFar);
+		void SetClipNear(float clipNear);
 		void SetBlitShader(RN::Shader *shader);
 		RN::Camera *GetLeftCamera();
 		RN::Camera *GetRightCamera();
@@ -42,6 +43,7 @@ namespace RO
 		
 	private:
 		void InitializeOculus();
+		void UpdateProjectionMatrix();;
 		
 		RN::Camera *_rightEye;
 		RN::Camera *_leftEye;
