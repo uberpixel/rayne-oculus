@@ -23,28 +23,31 @@
 
 #include "ROHMD.h"
 
-namespace RO
+namespace RN
 {
-	class System : public RN::ISingleton<System>
+	namespace oculus
 	{
-	public:
-		friend HMD;
-		
-		System();
-		~System() override;
-		
-		HMD *GetHMD(int index = 0);
-		int GetConnectedCount() const;
-		void DetectNewHMDs();
-		
-	private:
-		void RemoveHMD(HMD *hmd);
-		
-		std::map<int, HMD *> _hmds;
-		int _connectedCount;
-		
-		RNDeclareSingleton(System)
-	};
+		class System : public RN::ISingleton<System>
+		{
+		public:
+			friend HMD;
+			
+			System();
+			~System() override;
+			
+			HMD *GetHMD(int index = 0);
+			int GetConnectedCount() const;
+			void DetectNewHMDs();
+			
+		private:
+			void RemoveHMD(HMD *hmd);
+			
+			std::map<int, HMD *> _hmds;
+			int _connectedCount;
+			
+			RNDeclareSingleton(System)
+		};
+	}
 }
 
 #endif //__RAYNE_OCULUS_SYSTEM__

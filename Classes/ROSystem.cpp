@@ -17,71 +17,74 @@
 
 #include "ROSystem.h"
 
-namespace RO
+namespace RN
 {
-	RNDefineSingleton(System)
-	
-	System::System()
+	namespace oculus
 	{
-		ovr_Initialize();
-		DetectNewHMDs();
-	}
-	
-	System::~System()
-	{
-		for(auto hmd : _hmds)
+		RNDefineSingleton(System)
+		
+		System::System()
 		{
-			hmd.second->Release();
+			ovr_Initialize();
+			DetectNewHMDs();
 		}
 		
-		ovr_Shutdown();
-	}
-	
-	HMD *System::GetHMD(int index)
-	{
-		if(_hmds.count(index) == 0)
+		System::~System()
 		{
-			ovrHmd ovrhmd = nullptr;
-			if(index == -1)
+			for(auto hmd : _hmds)
 			{
-				ovrhmd = ovrHmd_CreateDebug(ovrHmdType::ovrHmd_DK2);
+				hmd.second->Release();
 			}
-			else
-			{
-				ovrhmd = ovrHmd_Create(index);
-			}
-			if(ovrhmd)
-			{
-				HMD *hmd = new HMD(ovrhmd);
-				_hmds.insert(std::pair<int, HMD*>(index, hmd));
-			}
-			else
-			{
-				return nullptr;
-			}
+			
+			ovr_Shutdown();
 		}
 		
-		return _hmds[index];
-	}
-	
-	void System::DetectNewHMDs()
-	{
-		_connectedCount = ovrHmd_Detect();
-	}
-	
-	int System::GetConnectedCount() const
-	{
-		return _connectedCount;
-	}
-	
-	void System::RemoveHMD(HMD *hmd)
-	{
-		for(auto other : _hmds)
+		HMD *System::GetHMD(int index)
 		{
-			if(other.second == hmd)
+			if(_hmds.count(index) == 0)
 			{
-				_hmds.erase(other.first);
-				return;
+				ovrHmd ovrhmd = nullptr;
+				if(index == -1)
+				{
+					ovrhmd = ovrHmd_CreateDebug(ovrHmdType::ovrHmd_DK2);
+				}
+				else
+				{
+					ovrhmd = ovrHmd_Create(index);
+				}
+				if(ovrhmd)
+				{
+					HMD *hmd = new HMD(ovrhmd);
+					_hmds.insert(std::pair<int, HMD*>(index, hmd));
+				}
+				else
+				{
+					return nullptr;
+				}
+			}
+			
+			return _hmds[index];
+		}
+		
+		void System::DetectNewHMDs()
+		{
+			_connectedCount = ovrHmd_Detect();
+		}
+		
+		int System::GetConnectedCount() const
+		{
+			return _connectedCount;
+		}
+		
+		void System::RemoveHMD(HMD *hmd)
+		{
+			for(auto other : _hmds)
+			{
+				if(other.second == hmd)
+				{
+					_hmds.erase(other.first);
+					return;
+				}
 			}
 		}
 	}

@@ -21,39 +21,42 @@
 #include <Rayne/Rayne.h>
 #include <OVR.h>
 
-namespace RO
+namespace RN
 {
-	class HMD : public RN::Object
+	namespace oculus
 	{
-	public:
-		enum Eye
-		{
-			Left = 0,
-			Right = 1
-		};
-		
-		struct Pose
+		class HMD : public RN::Object
 		{
 		public:
-			RN::Vector3 position;
-			RN::Quaternion rotation;
+			enum Eye
+			{
+				Left = 0,
+				Right = 1
+			};
+			
+			struct Pose
+			{
+			public:
+				RN::Vector3 position;
+				RN::Quaternion rotation;
+			};
+			
+			HMD(ovrHmd hmd);
+			~HMD();
+			
+			void SetAsDisplay(bool captureMain);
+			void DismissSafetyWarning();
+			
+			RN::Vector2 GetResolution();
+			RN::Vector4 GetDefaultFOV(Eye eye);
+			Pose GetPose();
+			
+			ovrHmd GetHMD() const { return _hmd; }
+			
+		private:
+			ovrHmd _hmd;
 		};
-		
-		HMD(ovrHmd hmd);
-		~HMD();
-		
-		void SetAsDisplay(bool captureMain);
-		void DismissSafetyWarning();
-		
-		RN::Vector2 GetResolution();
-		RN::Vector4 GetDefaultFOV(Eye eye);
-		Pose GetPose();
-		
-		ovrHmd GetHMD() const { return _hmd; }
-		
-	private:
-		ovrHmd _hmd;
-	};
+	}
 }
 
 #endif //__RAYNE_OCULUS_HMD__

@@ -21,41 +21,44 @@
 #include <Rayne/Rayne.h>
 #include "ROSystem.h"
 
-namespace RO
+namespace RN
 {
-	class Camera : public RN::SceneNode
+	namespace oculus
 	{
-	public:
-		Camera(HMD *hmd, float pixelsPerDisplayPixel, RN::Texture::Format format, RN::Camera::Flags flags = RN::Camera::Flags::Defaults);
-		~Camera();
-		
-		void Update(float delta) override;
-		
-		void SetSky(RN::Model *sky);
-		void SetAmbientColor(const RN::Color &color);
-		void SetClipFar(float clipFar);
-		void SetClipNear(float clipNear);
-		void SetBlitShader(RN::Shader *shader);
-		RN::Camera *GetLeftCamera();
-		RN::Camera *GetRightCamera();
-		
-		RN::SceneNode *GetHead();
-		
-	private:
-		void InitializeOculus();
-		void UpdateProjectionMatrix();;
-		
-		RN::Camera *_rightEye;
-		RN::Camera *_leftEye;
-		RN::SceneNode *_head;
-		HMD::Pose _pose;
-		
-		HMD *_hmd;
-		bool _inFrame;
-		bool _validFramebuffer;
-		
-		RNDeclareMeta(Camera)
-	};
+		class Camera : public RN::SceneNode
+		{
+		public:
+			Camera(HMD *hmd, float pixelsPerDisplayPixel, RN::Texture::Format format, RN::Camera::Flags flags = RN::Camera::Flags::Defaults);
+			~Camera();
+			
+			void Update(float delta) override;
+			
+			void SetSky(RN::Model *sky);
+			void SetAmbientColor(const RN::Color &color);
+			void SetClipFar(float clipFar);
+			void SetClipNear(float clipNear);
+			void SetBlitShader(RN::Shader *shader);
+			RN::Camera *GetLeftCamera();
+			RN::Camera *GetRightCamera();
+			
+			RN::SceneNode *GetHead();
+			
+		private:
+			void InitializeOculus();
+			void UpdateProjectionMatrix();;
+			
+			RN::Camera *_rightEye;
+			RN::Camera *_leftEye;
+			RN::SceneNode *_head;
+			HMD::Pose _pose;
+			
+			HMD *_hmd;
+			bool _inFrame;
+			bool _validFramebuffer;
+			
+			RNDeclareMeta(Camera)
+		};
+	}
 }
 
 #endif //__RAYNE_OCULUS_CAMERA__

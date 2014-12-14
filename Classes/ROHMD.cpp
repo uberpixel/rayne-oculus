@@ -18,84 +18,87 @@
 #include "ROHMD.h"
 #include "ROSystem.h"
 
-namespace RO
+namespace RN
 {
-	HMD::HMD(ovrHmd hmd)
-	: _hmd(hmd)
+	namespace oculus
 	{
-		// Start the sensor which provides the Rift’s pose and motion.
-		ovrHmd_ConfigureTracking(_hmd, ovrTrackingCap_Orientation |
-								 ovrTrackingCap_MagYawCorrection |
-								 ovrTrackingCap_Position, 0);
-	}
-	
-	HMD::~HMD()
-	{
-		System::GetSharedInstance()->RemoveHMD(this);
-		ovrHmd_Destroy(_hmd);
-	}
-	
-	RN::Vector2 HMD::GetResolution()
-	{
-		return RN::Vector2(_hmd->Resolution.w, _hmd->Resolution.h);
-	}
-	
-	RN::Vector4 HMD::GetDefaultFOV(Eye eye)
-	{
-		return RN::Vector4(_hmd->DefaultEyeFov[eye].LeftTan, _hmd->DefaultEyeFov[eye].RightTan, _hmd->DefaultEyeFov[eye].UpTan, _hmd->DefaultEyeFov[eye].DownTan);
-	}
-	
-	void HMD::SetAsDisplay(bool captureMain)
-	{
-#if RN_PLATFORM_MAC_OS
-		if(captureMain)
-			CGDisplayCapture(CGMainDisplayID());
-		
-		CGDirectDisplayID RiftDisplayId = (CGDirectDisplayID)_hmd->DisplayId;
-		
-		RN::Screen *screen = RN::Window::GetSharedInstance()->GetScreenWithID(RiftDisplayId);
-#elif RN_PLATFORM_WINDOWS
-		RN::Screen *screen = RN::Window::GetSharedInstance()->GetMainScreen();
-		const std::vector<RN::Screen *> &screens = RN::Window::GetSharedInstance()->GetScreens();
-		for(RN::Screen *scrn : screens)
+		HMD::HMD(ovrHmd hmd)
+		: _hmd(hmd)
 		{
-			if(RN::Math::Compare(scrn->GetFrame().x, _hmd->WindowsPos.x) && RN::Math::Compare(scrn->GetFrame().y, _hmd->WindowsPos.y))
-			{
-				screen = scrn;
-			}
+			// Start the sensor which provides the Rift’s pose and motion.
+			ovrHmd_ConfigureTracking(_hmd, ovrTrackingCap_Orientation |
+									 ovrTrackingCap_MagYawCorrection |
+									 ovrTrackingCap_Position, 0);
 		}
-#endif
-		if(screen)
+		
+		HMD::~HMD()
 		{
-			RN::WindowConfiguration *configuration = new RN::WindowConfiguration(_hmd->Resolution.w, _hmd->Resolution.h, screen);
-			RN::Window::GetSharedInstance()->ActivateConfiguration(configuration, RN::Window::Mask::Fullscreen|RN::Window::Mask::VSync);
+			System::GetSharedInstance()->RemoveHMD(this);
+			ovrHmd_Destroy(_hmd);
+		}
+		
+		RN::Vector2 HMD::GetResolution()
+		{
+			return RN::Vector2(_hmd->Resolution.w, _hmd->Resolution.h);
+		}
+		
+		RN::Vector4 HMD::GetDefaultFOV(Eye eye)
+		{
+			return RN::Vector4(_hmd->DefaultEyeFov[eye].LeftTan, _hmd->DefaultEyeFov[eye].RightTan, _hmd->DefaultEyeFov[eye].UpTan, _hmd->DefaultEyeFov[eye].DownTan);
+		}
+		
+		void HMD::SetAsDisplay(bool captureMain)
+		{
+#if RN_PLATFORM_MAC_OS
+			if(captureMain)
+				CGDisplayCapture(CGMainDisplayID());
 			
-			configuration->Release();
+			CGDirectDisplayID RiftDisplayId = (CGDirectDisplayID)_hmd->DisplayId;
+			
+			RN::Screen *screen = RN::Window::GetSharedInstance()->GetScreenWithID(RiftDisplayId);
+#elif RN_PLATFORM_WINDOWS
+			RN::Screen *screen = RN::Window::GetSharedInstance()->GetMainScreen();
+			const std::vector<RN::Screen *> &screens = RN::Window::GetSharedInstance()->GetScreens();
+			for(RN::Screen *scrn : screens)
+			{
+				if(RN::Math::Compare(scrn->GetFrame().x, _hmd->WindowsPos.x) && RN::Math::Compare(scrn->GetFrame().y, _hmd->WindowsPos.y))
+				{
+					screen = scrn;
+				}
+			}
+#endif
+			if(screen)
+			{
+				RN::WindowConfiguration *configuration = new RN::WindowConfiguration(_hmd->Resolution.w, _hmd->Resolution.h, screen);
+				RN::Window::GetSharedInstance()->ActivateConfiguration(configuration, RN::Window::Mask::Fullscreen|RN::Window::Mask::VSync);
+				
+				configuration->Release();
 
 #if RN_PLATFORM_WINDOWS
-//			ovrHmd_AttachToWindow(_hmd, RN::Window::GetSharedInstance()->GetCurrentWindow(), NULL, NULL);
+//				ovrHmd_AttachToWindow(_hmd, RN::Window::GetSharedInstance()->GetCurrentWindow(), NULL, NULL);
 #endif
-		}
-		
-		RN::Window::GetSharedInstance()->HideCursor();
-	}
-
-	void HMD::DismissSafetyWarning()
-	{
-		ovrHmd_DismissHSWDisplay(_hmd);
-	}
-	
-	HMD::Pose HMD::GetPose()
-	{
-		Pose pose;
-		ovrTrackingState ts  = ovrHmd_GetTrackingState(_hmd, ovr_GetTimeInSeconds());
-		if (ts.StatusFlags & (ovrStatus_OrientationTracked | ovrStatus_PositionTracked)) {
-			ovrPosef ovrpose = ts.HeadPose.ThePose;
+			}
 			
-			pose.position = RN::Vector3(ovrpose.Position.x, ovrpose.Position.y, ovrpose.Position.z);
-			pose.rotation = RN::Quaternion(ovrpose.Orientation.x, ovrpose.Orientation.y, ovrpose.Orientation.z, ovrpose.Orientation.w);
+			RN::Window::GetSharedInstance()->HideCursor();
+		}
+
+		void HMD::DismissSafetyWarning()
+		{
+			ovrHmd_DismissHSWDisplay(_hmd);
 		}
 		
-		return pose;
+		HMD::Pose HMD::GetPose()
+		{
+			Pose pose;
+			ovrTrackingState ts  = ovrHmd_GetTrackingState(_hmd, ovr_GetTimeInSeconds());
+			if (ts.StatusFlags & (ovrStatus_OrientationTracked | ovrStatus_PositionTracked)) {
+				ovrPosef ovrpose = ts.HeadPose.ThePose;
+				
+				pose.position = RN::Vector3(ovrpose.Position.x, ovrpose.Position.y, ovrpose.Position.z);
+				pose.rotation = RN::Quaternion(ovrpose.Orientation.x, ovrpose.Orientation.y, ovrpose.Orientation.z, ovrpose.Orientation.w);
+			}
+			
+			return pose;
+		}
 	}
 }
