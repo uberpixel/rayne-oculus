@@ -35,10 +35,10 @@ namespace RN
 			AddChild(_head);
 			
 			ovrSizei leftTextureSize = ovrHmd_GetFovTextureSize(_hmd->GetHMD(), ovrEye_Left, _hmd->GetHMD()->DefaultEyeFov[ovrEye_Left], pixelsPerDisplayPixel);
-			ovrSizei rightTextureSize = ovrHmd_GetFovTextureSize(_hmd->GetHMD(), ovrEye_Left, _hmd->GetHMD()->DefaultEyeFov[ovrEye_Left], pixelsPerDisplayPixel);
+			ovrSizei rightTextureSize = ovrHmd_GetFovTextureSize(_hmd->GetHMD(), ovrEye_Right, _hmd->GetHMD()->DefaultEyeFov[ovrEye_Right], pixelsPerDisplayPixel);
 			
 			flags &= ~(RN::Camera::Flags::Fullscreen | RN::Camera::Flags::UpdateAspect);
-
+			
 			_leftEye = new RN::Camera(RN::Vector2(leftTextureSize.w, leftTextureSize.h), format, flags | RN::Camera::Flags::NoFlush);
 			_leftEye->SceneNode::SetFlags(RN::SceneNode::Flags::NoSave|RN::SceneNode::Flags::HideInEditor);
 			_leftEye->SetFrame(RN::Rect(0.0f, 0.0f, leftTextureSize.w, leftTextureSize.h));
@@ -170,7 +170,7 @@ namespace RN
 
 		void Camera::UpdateProjectionMatrix()
 		{
-			ovrMatrix4f ovrLeftProj = ovrMatrix4f_Projection(_hmd->GetHMD()->DefaultEyeFov[ovrEye_Left], _rightEye->GetClipNear(), _leftEye->GetClipFar(), true);
+			ovrMatrix4f ovrLeftProj = ovrMatrix4f_Projection(_hmd->GetHMD()->DefaultEyeFov[ovrEye_Left], _leftEye->GetClipNear(), _leftEye->GetClipFar(), true);
 			ovrMatrix4f ovrRightProj = ovrMatrix4f_Projection(_hmd->GetHMD()->DefaultEyeFov[ovrEye_Right], _rightEye->GetClipNear(), _rightEye->GetClipFar(), true);
 
 			RN::Matrix leftProj;
@@ -253,17 +253,17 @@ namespace RN
 			_rightEye->SetBlitShader(shader);
 		}
 		
-		RN::Camera *Camera::GetLeftCamera()
+		RN::Camera *Camera::GetLeftCamera() const
 		{
 			return _leftEye;
 		}
 		
-		RN::Camera *Camera::GetRightCamera()
+		RN::Camera *Camera::GetRightCamera() const
 		{
 			return _rightEye;
 		}
 		
-		RN::SceneNode *Camera::GetHead()
+		RN::SceneNode *Camera::GetHead() const
 		{
 			return _head;
 		}

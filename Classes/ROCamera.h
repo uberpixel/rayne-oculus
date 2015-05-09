@@ -38,10 +38,10 @@ namespace RN
 			void SetClipFar(float clipFar);
 			void SetClipNear(float clipNear);
 			void SetBlitShader(RN::Shader *shader);
-			RN::Camera *GetLeftCamera();
-			RN::Camera *GetRightCamera();
+			RN::Camera *GetLeftCamera() const;
+			RN::Camera *GetRightCamera() const;
 			
-			RN::SceneNode *GetHead();
+			RN::SceneNode *GetHead() const;
 			
 		private:
 			void InitializeOculus();
